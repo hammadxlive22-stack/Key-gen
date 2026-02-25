@@ -1,24 +1,19 @@
 <?php
-// CORS Allow karna zaruri hai taaki mypdftools.site se data fetch ho sake
+// CORS Settings: mypdftools.site ko allow karne ke liye
 header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: Authorization, Content-Type");
 header("Content-Type: text/plain");
 
-// Random Key Format: ABCD-1234-EFGH
-function generateRandomKey($length = 4) {
-    $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    $key = '';
-    for ($i = 0; $i < 3; $i++) {
-        $part = '';
-        for ($j = 0; $j < $length; $j++) {
-            $part .= $characters[rand(0, strlen($characters) - 1)];
-        }
-        $key .= ($i == 0) ? $part : "-" . $part;
-    }
-    return $key;
+// Login Check (Authentication)
+if (!isset($_SERVER['PHP_AUTH_USER']) || 
+    ($_SERVER['PHP_AUTH_USER'] != 'keygen@gmail.com' || $_SERVER['PHP_AUTH_PW'] != 'keygen@hammad')) {
+    header('WWW-Authenticate: Basic realm="Key Gen"');
+    header('HTTP/1.0 401 Unauthorized');
+    echo 'Unauthorized Access';
+    exit;
 }
 
-$new_key = generateRandomKey();
-
-// Yahan aap apna Database logic daal sakte hain key save karne ke liye
-echo $new_key;
+// Agar login sahi hai toh Key generate karo
+$key = "HAMMAD-" . strtoupper(substr(md5(time()), 0, 12));
+echo $key;
 ?>
